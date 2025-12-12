@@ -37,7 +37,7 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 # Art_Palace
 
 
-# PROJECT ABOUT
+# MY PROJECT ABOUT
 # Art palace(Artist Community Token Platform)
 ## Executive Summary
 
