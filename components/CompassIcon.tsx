@@ -5,18 +5,18 @@ import type { HTMLMotionProps, Variants } from "motion/react";
 import { motion, useAnimation, useReducedMotion } from "motion/react";
 import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
 
-export interface LockIconHandle {
+export interface CompassIconHandle {
  startAnimation: () => void;
  stopAnimation: () => void;
 }
 
-interface LockIconProps extends HTMLMotionProps<"div"> {
+interface CompassIconProps extends HTMLMotionProps<"div"> {
  size?: number;
  duration?: number;
  isAnimated?: boolean;
 }
 
-const LockIcon = forwardRef<LockIconHandle, LockIconProps>(
+const CompassIcon = forwardRef<CompassIconHandle, CompassIconProps>(
  (
   {
    onMouseEnter,
@@ -52,22 +52,29 @@ const LockIcon = forwardRef<LockIconHandle, LockIconProps>(
   );
 
   const handleLeave = useCallback(
-   (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!isControlled.current) {
-     controls.start("normal");
-    } else {
-     onMouseLeave?.(e);
-    }
+   (e?: React.MouseEvent<HTMLDivElement>) => {
+    if (!isControlled.current) controls.start("normal");
+    else if (e) onMouseLeave?.(e);
    },
    [controls, onMouseLeave],
   );
 
-  const lockVariants: Variants = {
-   normal: { x: 0, rotate: 0 },
+  const circleVariants: Variants = {
+   normal: { rotate: 0, scale: 1 },
    animate: {
-    x: [0, -3, 3, -3, 3, 0],
-    rotate: [0, -2, 2, -2, 2, 0],
-    transition: { duration: 0.4 * duration },
+    rotate: [0, 10, -6, 3, 0],
+    scale: [1, 1.05, 0.98, 1],
+    transition: { duration: 0.9 * duration, ease: [0.22, 1, 0.36, 1] },
+   },
+  };
+
+  const needleVariants: Variants = {
+   normal: { rotate: 0, pathLength: 1, opacity: 1 },
+   animate: {
+    rotate: [0, -28, 8, -4, 0],
+    pathLength: [0.8, 1, 0.6, 1],
+    opacity: [0.9, 1, 0.85, 1],
+    transition: { duration: 1 * duration, ease: [0.22, 1, 0.36, 1] },
    },
   };
 
@@ -88,24 +95,22 @@ const LockIcon = forwardRef<LockIconHandle, LockIconProps>(
      strokeWidth="2"
      strokeLinecap="round"
      strokeLinejoin="round"
-     variants={lockVariants}
      animate={controls}
      initial="normal"
+     variants={circleVariants}
     >
-     <motion.rect
-      width="18"
-      height="11"
-      x="3"
-      y="11"
-      rx="2"
-      ry="2"
-      initial="normal"
-      animate={controls}
-     />
      <motion.path
-      d="M7 11V7a5 5 0 0 1 10 0v4"
+      d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"
+      variants={needleVariants}
       initial="normal"
-      animate={controls}
+      style={{ transformOrigin: "center" }}
+     />
+     <motion.circle
+      cx="12"
+      cy="12"
+      r="10"
+      variants={circleVariants}
+      initial="normal"
      />
     </motion.svg>
    </motion.div>
@@ -113,5 +118,5 @@ const LockIcon = forwardRef<LockIconHandle, LockIconProps>(
  },
 );
 
-LockIcon.displayName = "LockIcon";
-export { LockIcon };
+CompassIcon.displayName = "CompassIcon";
+export { CompassIcon };

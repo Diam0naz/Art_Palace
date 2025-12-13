@@ -5,18 +5,18 @@ import type { HTMLMotionProps, Variants } from "motion/react";
 import { motion, useAnimation, useReducedMotion } from "motion/react";
 import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
 
-export interface LockIconHandle {
+export interface MenuIconHandle {
  startAnimation: () => void;
  stopAnimation: () => void;
 }
 
-interface LockIconProps extends HTMLMotionProps<"div"> {
+interface MenuIconProps extends HTMLMotionProps<"div"> {
  size?: number;
  duration?: number;
  isAnimated?: boolean;
 }
 
-const LockIcon = forwardRef<LockIconHandle, LockIconProps>(
+const MenuIcon = forwardRef<MenuIconHandle, MenuIconProps>(
  (
   {
    onMouseEnter,
@@ -43,10 +43,13 @@ const LockIcon = forwardRef<LockIconHandle, LockIconProps>(
   });
 
   const handleEnter = useCallback(
-   (e?: React.MouseEvent<HTMLDivElement>) => {
+   (e: React.MouseEvent<HTMLDivElement>) => {
     if (!isAnimated || reduced) return;
-    if (!isControlled.current) controls.start("animate");
-    else if (e) onMouseEnter?.(e);
+    if (!isControlled.current) {
+     controls.start("animate");
+    } else {
+     onMouseEnter?.(e);
+    }
    },
    [controls, reduced, isAnimated, onMouseEnter],
   );
@@ -62,13 +65,13 @@ const LockIcon = forwardRef<LockIconHandle, LockIconProps>(
    [controls, onMouseLeave],
   );
 
-  const lockVariants: Variants = {
-   normal: { x: 0, rotate: 0 },
-   animate: {
-    x: [0, -3, 3, -3, 3, 0],
-    rotate: [0, -2, 2, -2, 2, 0],
-    transition: { duration: 0.4 * duration },
-   },
+  const lineVariants: Variants = {
+   normal: { x: 0, opacity: 1 },
+   animate: (i) => ({
+    x: [0, i % 2 === 0 ? 4 : -4, 0],
+    opacity: [1, 0.5, 1],
+    transition: { duration: 0.4 * duration, delay: i * 0.1 },
+   }),
   };
 
   return (
@@ -88,30 +91,17 @@ const LockIcon = forwardRef<LockIconHandle, LockIconProps>(
      strokeWidth="2"
      strokeLinecap="round"
      strokeLinejoin="round"
-     variants={lockVariants}
      animate={controls}
      initial="normal"
     >
-     <motion.rect
-      width="18"
-      height="11"
-      x="3"
-      y="11"
-      rx="2"
-      ry="2"
-      initial="normal"
-      animate={controls}
-     />
-     <motion.path
-      d="M7 11V7a5 5 0 0 1 10 0v4"
-      initial="normal"
-      animate={controls}
-     />
+     <motion.path d="M4 12h16" variants={lineVariants} custom={0} />
+     <motion.path d="M4 18h16" variants={lineVariants} custom={1} />
+     <motion.path d="M4 6h16" variants={lineVariants} custom={2} />
     </motion.svg>
    </motion.div>
   );
  },
 );
 
-LockIcon.displayName = "LockIcon";
-export { LockIcon };
+MenuIcon.displayName = "MenuIcon";
+export { MenuIcon };

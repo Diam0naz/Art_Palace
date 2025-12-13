@@ -5,18 +5,18 @@ import type { HTMLMotionProps, Variants } from "motion/react";
 import { motion, useAnimation, useReducedMotion } from "motion/react";
 import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
 
-export interface LockIconHandle {
+export interface SearchHandle {
  startAnimation: () => void;
  stopAnimation: () => void;
 }
 
-interface LockIconProps extends HTMLMotionProps<"div"> {
+interface SearchProps extends HTMLMotionProps<"div"> {
  size?: number;
  duration?: number;
  isAnimated?: boolean;
 }
 
-const LockIcon = forwardRef<LockIconHandle, LockIconProps>(
+const SearchIcon = forwardRef<SearchHandle, SearchProps>(
  (
   {
    onMouseEnter,
@@ -52,22 +52,48 @@ const LockIcon = forwardRef<LockIconHandle, LockIconProps>(
   );
 
   const handleLeave = useCallback(
-   (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!isControlled.current) {
-     controls.start("normal");
-    } else {
-     onMouseLeave?.(e);
-    }
+   (e?: React.MouseEvent<HTMLDivElement>) => {
+    if (!isControlled.current) controls.start("normal");
+    else if (e) onMouseLeave?.(e);
    },
    [controls, onMouseLeave],
   );
 
-  const lockVariants: Variants = {
-   normal: { x: 0, rotate: 0 },
+  const circleVariants: Variants = {
+   normal: { strokeDashoffset: 0, opacity: 1, scale: 1 },
    animate: {
-    x: [0, -3, 3, -3, 3, 0],
-    rotate: [0, -2, 2, -2, 2, 0],
-    transition: { duration: 0.4 * duration },
+    strokeDashoffset: [50, 0],
+    opacity: [0.3, 1],
+    scale: [1, 1.1, 1],
+    transition: {
+     duration: 0.8 * duration,
+     ease: "easeInOut" as const,
+    },
+   },
+  };
+
+  const handleVariants: Variants = {
+   normal: { strokeDashoffset: 0, opacity: 1 },
+   animate: {
+    strokeDashoffset: [20, 0],
+    opacity: [0, 1],
+    transition: {
+     duration: 0.6 * duration,
+     delay: 0.3,
+     ease: "easeInOut" as const,
+    },
+   },
+  };
+
+  const groupVariants: Variants = {
+   normal: { rotate: 0, scale: 1 },
+   animate: {
+    rotate: [0, 5, -5, 0],
+    scale: [1, 1.05, 1],
+    transition: {
+     duration: 1 * duration,
+     ease: "easeInOut" as const,
+    },
    },
   };
 
@@ -88,30 +114,33 @@ const LockIcon = forwardRef<LockIconHandle, LockIconProps>(
      strokeWidth="2"
      strokeLinecap="round"
      strokeLinejoin="round"
-     variants={lockVariants}
-     animate={controls}
-     initial="normal"
+     className="lucide lucide-search-icon lucide-search"
     >
-     <motion.rect
-      width="18"
-      height="11"
-      x="3"
-      y="11"
-      rx="2"
-      ry="2"
-      initial="normal"
-      animate={controls}
-     />
-     <motion.path
-      d="M7 11V7a5 5 0 0 1 10 0v4"
-      initial="normal"
-      animate={controls}
-     />
+     <motion.g variants={groupVariants} initial="normal" animate={controls}>
+      <motion.circle
+       cx="11"
+       cy="11"
+       r="8"
+       strokeDasharray="50"
+       strokeDashoffset="50"
+       variants={circleVariants}
+       initial="normal"
+       animate={controls}
+      />
+      <motion.path
+       d="m21 21-4.34-4.34"
+       strokeDasharray="20"
+       strokeDashoffset="20"
+       variants={handleVariants}
+       initial="normal"
+       animate={controls}
+      />
+     </motion.g>
     </motion.svg>
    </motion.div>
   );
  },
 );
 
-LockIcon.displayName = "LockIcon";
-export { LockIcon };
+SearchIcon.displayName = "SearchIcon";
+export { SearchIcon };
