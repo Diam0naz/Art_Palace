@@ -10,8 +10,7 @@ const SearchBar = () => {
           className={cn(
             "w-90 h-full p-2 rounded-lg",
             "transition-color duration-200 ease-out",
-            // "motion-reduce:transition-none",
-            "bg-purple-200 text-violet-300 active:bg-violet-400 hover:text-violet-700",
+            "bg-purple-200 text-violet-500 dark:bg-purple-400 active:bg-violet-400 hover:text-violet-700",
             "flex inset-0"
           )}>
           <input

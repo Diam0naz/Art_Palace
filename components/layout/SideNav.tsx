@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import logo from "@/public/main-logo.png";
-import { RiCloseLine, RiHome5Line, RiMenuLine } from "react-icons/ri";
+import { RiHome5Line } from "react-icons/ri";
 import { IoMailOutline, IoWallet } from "react-icons/io5";
 import { CiViewList, CiSettings } from "react-icons/ci";
 import { TbChartBar } from "react-icons/tb";
@@ -25,51 +25,33 @@ const navItems: NavItem[] = [
 ];
 
 function SideBar() {
-  const [pinnedOpen, setPinnedOpen] = useState(false);
   const [hovered, setHovered] = useState(false);
 
-  const expanded = pinnedOpen || hovered;
-
-  useEffect(() => {
-    if (!pinnedOpen) return;
-
-    const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setPinnedOpen(false);
-    };
-
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [pinnedOpen]);
+  const expanded = hovered;
 
   return (
     <>
-      {/* Backdrop blur when the menu is explicitly opened ("pinned") */}
+      {/* Backdrop blur whenever the sidebar is hover-expanded */}
       <div
         aria-hidden
-        onClick={() => {
-          // Only meaningful when the menu is pinned open
-          setPinnedOpen(false);
-          setHovered(false);
-        }}
         className={cn(
           "fixed inset-0 z-30 bg-black/20 backdrop-blur-sm",
           "transition-opacity duration-200 ease-out",
           "motion-reduce:transition-none",
-          // Show blur whenever the sidebar is expanded (hover OR pinned)
           expanded ? "opacity-100" : "opacity-0",
-          // Don't block interaction on hover; allow click-to-close only when pinned
-          pinnedOpen ? "pointer-events-auto" : "pointer-events-none"
+          // Never block interaction; hover should feel "light" and non-modal
+          "pointer-events-none"
         )}
       />
 
       <aside
-        onMouseEnter={() => !pinnedOpen && setHovered(true)}
-        onMouseLeave={() => !pinnedOpen && setHovered(false)}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
         data-expanded={expanded}
         className={cn(
           "fixed inset-y-0 left-0 z-40 h-screen overflow-x-hidden border-r border-purple-300",
           "flex flex-col gap-6 p-4",
-          "bg-purple-200/90 text-purple-900",
+          "bg-purple-200/90 text-purple-900 dark:bg-purple-400",
           "transition-[width,background-color,color] duration-200 ease-out",
           "motion-reduce:transition-none",
           "will-change-[width]",
@@ -83,7 +65,7 @@ function SideBar() {
           width={100}
           height={100}
           priority
-          className="scale-125 object-cover my-5"
+          className="scale-125 object-cover my-5 flex self-center"
         />
 
         <nav className="flex min-h-0 flex-1 flex-col">
